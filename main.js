@@ -34,20 +34,22 @@ var mainState = {
         if (this.bird.y < 0 || this.bird.y > 490)
         this.restartGame();
 
-        game.physics.arcade.overlap(
-            this.bird, this.pipes, this.restartGame, null, this);
+        game.physics.arcade.overlap(this.bird, this.pipes, this.hitPipe, null, this);  
 
         if (this.bird.angle < 20)
             this.bird.angle += 1; 
     },
 
     jump: function() {
+        if (this.bird.alive == false)
+            return;
         // Add a vertical velocity to the bird
         this.bird.body.velocity.y = -350;
         var animation = game.add.tween(this.bird);
 
         animation.to({angle: -20}, 100);
         animation.start(); 
+          
     },
     
     // Restart the game
@@ -77,6 +79,24 @@ var mainState = {
         for (var i = 0; i < 8; i++)
             if (i != hole && i != hole + 1) 
                 this.addOnePipe(400, i * 60 + 10);   
+    },
+
+    hitPipe: function() {
+        // If the bird has already hit a pipe, do nothing
+        // It means the bird is already falling off the screen
+        if (this.bird.alive == false)
+            return;
+    
+        // Set the alive property of the bird to false
+        this.bird.alive = false;
+    
+        // Prevent new pipes from appearing
+        game.time.events.remove(this.timer);
+    
+        // Go through all the pipes, and stop their movement
+        this.pipes.forEach(function(p){
+            p.body.velocity.x = 0;
+        }, this);
     }
 };
 
