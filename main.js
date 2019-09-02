@@ -25,6 +25,7 @@ var mainState = {
         this.timer = game.time.events.loop(1500, this.addRowOfPipes, this); 
         this.score = 0;
         this.labelScore = game.add.text(20,20,"0", {font: "30px Arial", fill: "#ffffff"});
+        this.bird.anchor.setTo(-0.2, 0.5); 
     },
 
     update: function() {
@@ -35,11 +36,18 @@ var mainState = {
 
         game.physics.arcade.overlap(
             this.bird, this.pipes, this.restartGame, null, this);
+
+        if (this.bird.angle < 20)
+            this.bird.angle += 1; 
     },
 
     jump: function() {
         // Add a vertical velocity to the bird
         this.bird.body.velocity.y = -350;
+        var animation = game.add.tween(this.bird);
+
+        animation.to({angle: -20}, 100);
+        animation.start(); 
     },
     
     // Restart the game
